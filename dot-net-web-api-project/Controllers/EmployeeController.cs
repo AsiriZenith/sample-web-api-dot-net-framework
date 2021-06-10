@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using dot_net_web_api_project.Models;
 
 namespace dot_net_web_api_project.Controllers
 {
@@ -27,6 +28,33 @@ namespace dot_net_web_api_project.Controllers
                 da.Fill(dataTable);
             }
             return Request.CreateResponse(HttpStatusCode.OK, dataTable);
+        }
+
+        public string Post(Employee employee)
+        {
+            try
+            {
+                DataTable dataTable = new DataTable();
+                string query = @"
+                        INSERT INTO dbo.Employees (EmployeeName, Department, MailID, DOJ) VALUES (
+                                '" + employee.EmployeeName + @"',
+                                '" + employee.Department + @"',
+                                '" + employee.MailID + @"',
+                                '" + employee.DOJ + @"'
+                                )";
+                using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["EmployeeAppDB"].ConnectionString))
+                using (var cmd = new SqlCommand(query, con))
+                using (var da = new SqlDataAdapter(cmd))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    da.Fill(dataTable);
+                }
+                return "Added Successfully";
+            }
+            catch(Exception ex)
+            {
+                return "Faild to Add";
+            }
         }
     }
 }
